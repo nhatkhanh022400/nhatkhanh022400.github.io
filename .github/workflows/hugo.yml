@@ -1,19 +1,23 @@
-name: CI
-on: push
+name: github pages
+
+on:
+  push:
+    branches:
+      - main  # Set a branch name to trigger deployment
+
 jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
 
-      - name: Setup hugo
+      - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: "0.68.3"
-
-      - name: Update theme
-        run: git submodule update --init --recursive
+          hugo-version: '0.68.3'
 
       - name: Build
         run: hugo --minify
@@ -21,9 +25,5 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          personal_token: ${{ secrets.TOKEN }}
-          external_repository: EXTERNAL_REPOSITORY
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
-          user_name: nhatkhanh1
-          user_email: nhatkhanh0204@gmail.com
-          puslish_branch: main
